@@ -1,0 +1,16 @@
+# Environnement et Secrets
+.env
+
+# Fichiers de bases de données et volumes locaux (si montés)
+pg_data/
+kestra_data/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+env/
+
+# Mac/Windows (fichiers systèmes)
+.DS_Store
+Thumbs.db

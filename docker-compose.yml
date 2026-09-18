@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  # 1. DATA WAREHOUSE & VECTOR DATABASE
+  postgres-dwh:
+    image: pgvector/pgvector:pg16
+    container_name: lorcana_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - lorcana_net
+
+  # 2. ORCHESTRATEUR ETL
+  kestra:
+    image: kestra/kestra:latest
+    container_name: lorcana_kestra
+    restart: unless-stopped
+    command: server standalone
+    ports:
+      - "8080:8080"
+    volumes:
+      - kestra_data:/app/storage
+    networks:
+      - lorcana_net
+    depends_on:
+      - postgres-dwh
+
+volumes:
+  pg_data:
+    name: lorcana_pg_data
+  kestra_data:
+    name: lorcana_kestra_data
+
+networks:
+  lorcana_net:
+    name: lorcana_network
